@@ -1,0 +1,21 @@
+variables:
+  - name: RecycleAfterEachUse
+    value: false
+  - name: TimeToLiveMinutes
+    value: 15
+  - name: BusinessHoursBegin
+    value: 8
+  - name: BusinessHoursEnd
+    value: 17
+  - name: BusinessHoursMaxCapacity
+    value: 2
+  - name: BusinessHoursIdle
+    value: 1
+  - name: OutsideBusinessHoursMaxCapacity
+    value: 2
+  - name: OutsideBusinessHoursIdle
+    value: 0
+  - name: WeekendMaxCapacity
+    value: 2
+  - name: WeekendIdle
+    value: 0

@@ -1,0 +1,93 @@
+parameters:
+  - name: imageNames
+    displayName: Images to process
+    type: object
+    default:
+      - "windows2022"
+      - "ubuntu2204"
+
+trigger:
+  batch: true
+  paths:
+    include:
+      - src
+      - infrastructure
+
+variables:
+  - template: variables.yml
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - job: Deploy_Infrastructure
+    steps:
+      - task: AzurePowerShell@5
+        displayName: "Deploy Infrastructure"
+        inputs:
+          azureSubscription: $(SubscriptionName)
+          ScriptType: "FilePath"
+          ScriptPath: "infrastructure/deployInfrastructure.ps1"
+          azurePowerShellVersion: "LatestVersion"
+          ScriptArguments: '
+            -ResourceGroupName $(ResourceGroupName) `
+            -StorageAccountName $(StorageAccountName)
+            -HostingPlanName $(HostingPlanName) `
+            -ApplicationInsightsName $(ApplicationInsightsName) `
+            -ActionGroupName "$(ActionGroupName)" `
+            -AlertNotificationEmailAddress "$(AlertNotificationEmailAddress)"
+            '
+  - ${{ each imageName in parameters.imageNames }}:
+      - job: Deploy_Function_${{ imageName }}
+        dependsOn:
+          - Deploy_Infrastructure
+        variables:
+          - template: ${{ imageName }}.yml
+        steps:
+          - task: AzurePowerShell@5
+            displayName: "Deploy Infrastructure"
+            inputs:
+              azureSubscription: $(SubscriptionName)
+              ScriptType: "FilePath"
+              ScriptPath: "infrastructure/deployImage.ps1"
+              azurePowerShellVersion: "LatestVersion"
+              ScriptArguments: "
+                -ResourceGroupName $(ResourceGroupName) `
+                -StorageAccountName $(StorageAccountName)
+                -HostingPlanName $(HostingPlanName) `
+                -ApplicationInsightsName $(ApplicationInsightsName) `
+                -FunctionNamePrefix $(FunctionNamePrefix) `
+                -ImageName ${{ imageName }}
+                "
+
+          - task: ArchiveFiles@2
+            displayName: Zip Azure Functions code
+            inputs:
+              rootFolderOrFile: "src/"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(System.DefaultWorkingDirectory)/functions.zip"
+              replaceExistingArchive: true
+
+          - task: AzureFunctionApp@1
+            displayName: Deploy Azure Functions - $(AzureFunctionName)
+            inputs:
+              azureSubscription: $(SubscriptionName)
+              appType: "functionApp"
+              appName: $(functionNamePrefix)${{ imageName }}
+              package: "$(System.DefaultWorkingDirectory)/functions.zip"
+              deploymentMethod: "zipDeploy"
+              appSettings:
+                -AzureDevOpsOrganizationName $(AzureDevOpsOrganizationName)
+                -AzureDevOpsPAT $(PAT)
+                -AzureVMScaleSets $(vmssNamePrefix)${{ imageName }}
+                -RecycleAfterEachUse $(RecycleAfterEachUse)
+                -TimeToLiveMinutes $(TimeToLiveMinutes)
+                -BusinessHoursBegin $(BusinessHoursBegin)
+                -BusinessHoursEnd $(BusinessHoursEnd)
+                -BusinessHoursMaxCapacity $(BusinessHoursMaxCapacity)
+                -BusinessHoursIdle $(BusinessHoursIdle)
+                -OutsideBusinessHoursMaxCapacity $(OutsideBusinessHoursMaxCapacity)
+                -OutsideBusinessHoursIdle $(OutsideBusinessHoursIdle)
+                -WeekendMaxCapacity $(WeekendMaxCapacity)
+                -WeekendIdle $(WeekendIdle)

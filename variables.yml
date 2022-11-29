@@ -1,0 +1,24 @@
+variables:
+  - name: ResourceGroupName
+    value: rg-shagents
+  - name: SubscriptionName
+    value: "Visual Studio Enterprise"
+
+  - name: vmssNamePrefix
+    value: vmss-shagent-
+  - name: StorageAccountName
+    value: stagents
+
+  - name: AzureDevOpsOrganizationName
+    value: xxxx
+
+  - name: FunctionNamePrefix
+    value: func-azurevmsssettings-
+  - name: HostingPlanName
+    value: asp-azurevmsssettings
+  - name: ApplicationInsightsName
+    value: appi-azurevmsssettings
+  - name: ActionGroupName
+    value: "DevOps Team channel"
+  - name: AlertNotificationEmailAddress
+    value: "e-mail@e-mail.com"
