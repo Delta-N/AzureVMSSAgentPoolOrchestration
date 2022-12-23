@@ -97,15 +97,15 @@ Try {
 
                 If (($currentDate.DayOfWeek -eq "Saturday") -or ($currentDate.DayOfWeek -eq "Sunday") ) {
                     Write-Information -InformationAction Continue -MessageData "It is weekend."
-                    Set-ScaleSet -poolId $poolID -desiredIdle $weekendIdle -azureDevOpsPAT $azureDevOpsPAT  -maxCapacity $weekendMaxCapacity -recycleAfterEachUse $false -azureDevOpsOrganizationName $azureDevOpsOrganizationName -timeToLiveMinutes $timeToLiveMinutes
+                    Set-ScaleSet -poolId $poolID -desiredIdle $weekendIdle -azureDevOpsPAT $azureDevOpsPAT  -maxCapacity $weekendMaxCapacity -recycleAfterEachUse $RecycleAfterEachUse -azureDevOpsOrganizationName $azureDevOpsOrganizationName -timeToLiveMinutes $timeToLiveMinutes
                 }    
                 ElseIf ( ($currentDate.Hour -ge $businessHoursBegin ) -and ($currentDate.Hour -lt $businessHoursEnd) ) {
                     Write-Information -InformationAction Continue -MessageData "It is a weekday between $($businessHoursBegin):00 and $($businessHoursEnd):00; that means business hours."
-                    Set-ScaleSet -poolId $poolID -desiredIdle $businessHoursIdle -azureDevOpsPAT $azureDevOpsPAT -maxCapacity $businessHoursMaxCapacity -recycleAfterEachUse $false -azureDevOpsOrganizationName $azureDevOpsOrganizationName -timeToLiveMinutes $timeToLiveMinutes
+                    Set-ScaleSet -poolId $poolID -desiredIdle $businessHoursIdle -azureDevOpsPAT $azureDevOpsPAT -maxCapacity $businessHoursMaxCapacity -recycleAfterEachUse $RecycleAfterEachUse -azureDevOpsOrganizationName $azureDevOpsOrganizationName -timeToLiveMinutes $timeToLiveMinutes
                 }
                 Elseif ( ($currentDate.Hour -lt $businessHoursBegin ) -and ($currentDate.Hour -gt $businessHoursEnd) ) {
                     Write-Information -InformationAction Continue -MessageData "It is a weekday between $($businessHoursEnd):00 and $($businessHoursBegin):00; that means outside business hours."
-                    Set-ScaleSet -poolId $poolID -desiredIdle $outsideBusinessHoursIdle -azureDevOpsPAT $azureDevOpsPAT -maxCapacity $outsideBusinessHoursMaxCapacity -recycleAfterEachUse $false -azureDevOpsOrganizationName $azureDevOpsOrganizationName -timeToLiveMinutes $timeToLiveMinutes
+                    Set-ScaleSet -poolId $poolID -desiredIdle $outsideBusinessHoursIdle -azureDevOpsPAT $azureDevOpsPAT -maxCapacity $outsideBusinessHoursMaxCapacity -recycleAfterEachUse $RecycleAfterEachUse -azureDevOpsOrganizationName $azureDevOpsOrganizationName -timeToLiveMinutes $timeToLiveMinutes
                 }
         
             }  
