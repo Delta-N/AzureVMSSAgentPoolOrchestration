@@ -63,7 +63,7 @@ If ($Timer.IsPastDue) {
 $azureDevOpsOrganizationName = $env:AzureDevOpsOrganizationName
 $azureDevOpsPAT = $env:AzureDevOpsPAT
 $azureVMScaleSets = $env:AzureVMScaleSets
-$recycleAfterEachUse = $env:RecycleAfterEachUse
+$recycleAfterEachUse = [System.Convert]::ToBoolean($env:RecycleAfterEachUse)
 $timeToLiveMinutes = $env:TimeToLiveMinutes
 
 $businessHoursBegin = $env:BusinessHoursBegin
